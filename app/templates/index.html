@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apex Dental - Outbound AI Receptionist Dashboard</title>
+    <!-- Modern Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --primary-glow: rgba(99, 102, 241, 0.3);
+            --success: #10b981;
+            --success-glow: rgba(16, 185, 129, 0.2);
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #0ea5e9;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+        }
+
+        /* Layout Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            width: 100%;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* Premium Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px border var(--card-border);
+            border-radius: 20px;
+            padding: 1.25rem 2rem;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            background: linear-gradient(135deg, var(--primary) 0%, #a855f7 100%);
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .logo-icon svg {
+            width: 22px;
+            height: 22px;
+            fill: white;
+        }
+
+        .logo-text h1 {
+            font-size: 1.5rem;
+            background: linear-gradient(to right, #ffffff, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-text p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: var(--success);
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--success);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        /* Dashboard Grid Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 2rem;
+            flex-grow: 1;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Card Stylings (Glassmorphism) */
+        .glass-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(16px);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            overflow: hidden;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.50rem;
+        }
+
+        /* Buttons styling */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 14px var(--primary-glow);
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px var(--primary-glow);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            box-shadow: none;
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            box-shadow: none;
+        }
+
+        .btn-icon {
+            width: 38px;
+            height: 38px;
+            padding: 0;
+            border-radius: 10px;
+        }
+
+        /* Appointment Table styling */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 12px;
+            background: rgba(15, 23, 42, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background: rgba(15, 23, 42, 0.5);
+            padding: 1rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        td {
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Status Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .badge-confirmed {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .badge-cancelled {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .badge-rescheduled {
+            background: rgba(14, 165, 233, 0.1);
+            color: var(--info);
+            border: 1px solid rgba(14, 165, 233, 0.2);
+        }
+
+        /* Phone trigger button inside table */
+        .call-btn {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            color: #818cf8;
+            cursor: pointer;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .call-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        .call-btn svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        /* Live Assistant Console */
+        .assistant-panel {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .console-status {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 14px;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .pulsing-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--text-muted);
+        }
+
+        .pulsing-indicator.active {
+            background-color: var(--primary);
+            animation: pulse-primary 1.5s infinite;
+        }
+
+        .pulsing-indicator.listening {
+            background-color: var(--success);
+            animation: pulse-success 1.5s infinite;
+        }
+
+        .pulsing-indicator.thinking {
+            background-color: var(--warning);
+            animation: pulse-warning 1.5s infinite;
+        }
+
+        @keyframes pulse-primary {
+            0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7); }
+            70% { box-shadow: 0 0 0 8px rgba(99, 102, 241, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+        }
+
+        @keyframes pulse-success {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        @keyframes pulse-warning {
+            0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
+            70% { box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+        }
+
+        /* Chat/Transcript stream */
+        .transcript-container {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 1.5rem;
+            flex-grow: 1;
+            min-height: 250px;
+            max-height: 400px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            scroll-behavior: smooth;
+        }
+
+        .bubble {
+            max-width: 85%;
+            padding: 0.9rem 1.25rem;
+            border-radius: 18px;
+            line-height: 1.4;
+            font-size: 0.92rem;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .bubble-ai {
+            align-self: flex-start;
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            color: #e0e7ff;
+            border-bottom-left-radius: 4px;
+        }
+
+        .bubble-user {
+            align-self: flex-end;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border-bottom-right-radius: 4px;
+        }
+
+        .transcript-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-muted);
+            text-align: center;
+            gap: 0.75rem;
+        }
+
+        .transcript-empty svg {
+            width: 48px;
+            height: 48px;
+            fill: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Final Summary block */
+        .summary-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(99, 102, 241, 0.15);
+            border-radius: 16px;
+            padding: 1.25rem;
+            display: none;
+            flex-direction: column;
+            gap: 0.75rem;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .summary-title {
+            font-size: 0.95rem;
+            color: #a5b4fc;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .summary-text {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: var(--text-main);
+        }
+
+        /* Mock Audio player styles */
+        .mock-audio-player {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .play-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .play-btn svg {
+            width: 14px;
+            height: 14px;
+            fill: currentColor;
+        }
+
+        .audio-waveform {
+            height: 2px;
+            flex-grow: 1;
+            background: rgba(255, 255, 255, 0.1);
+            position: relative;
+            border-radius: 2px;
+        }
+
+        .audio-progress {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: var(--primary);
+            width: 40%;
+        }
+
+        /* Form Modal dialog styling */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+            z-index: 1000;
+        }
+
+        .modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: #1e293b;
+            border: 1px solid var(--card-border);
+            width: 100%;
+            max-width: 500px;
+            border-radius: 24px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            transform: scale(0.9);
+            transition: var(--transition);
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        input, textarea, select {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            color: white;
+            font-family: inherit;
+            font-size: 0.9rem;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <!-- Header -->
+        <header>
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12,2A3,3 0 0,1 15,5V11A3,3 0 0,1 12,14A3,3 0 0,1 9,11V5A3,3 0 0,1 12,2M19,11C19,14.53 16.39,17.44 13,17.93V21H11V17.93C7.61,17.44 5,14.53 5,11H7A5,5 0 0,0 12,16A5,5 0 0,0 17,11H19Z" />
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h1>Apex Dental</h1>
+                    <p>Outbound Call Assistant</p>
+                </div>
+            </div>
+            <div class="status-badge">
+                <div class="status-dot"></div>
+                System Active
+            </div>
+        </header>
+
+        <!-- Main Workspace Grid -->
+        <div class="dashboard-grid">
+            
+            <!-- Left Side: Appointments Manager -->
+            <div class="glass-card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--primary)">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        Appointments Scheduler
+                    </h2>
+                    <button class="btn" onclick="openModal()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Add Patient
+                    </button>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Patient</th>
+                                <th>Phone Number</th>
+                                <th>Appointment Slot</th>
+                                <th>Status</th>
+                                <th style="text-align: center;">Call</th>
+                            </tr>
+                        </thead>
+                        <tbody id="appointments-tbody">
+                            <tr>
+                                <td colspan="5" style="text-align:center; color:var(--text-muted); padding:2rem;">
+                                    Loading appointments...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Right Side: Live Call Console -->
+            <div class="glass-card assistant-panel">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--primary)">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                        Live Agent Console
+                    </h2>
+                </div>
+
+                <!-- Call Status Info Bar -->
+                <div class="console-status">
+                    <div class="pulsing-indicator" id="console-indicator"></div>
+                    <span id="console-status-text" style="color: var(--text-muted)">Idle - Waiting to trigger call</span>
+                </div>
+
+                <!-- Transcript stream -->
+                <div class="transcript-container" id="transcript-box">
+                    <div class="transcript-empty" id="transcript-empty-state">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12,2C6.5,2 2,6.5 2,12C2,17.5 6.5,22 12,22C17.5,22 22,17.5 22,12C22,6.5 17.5,2 12,2M12,20C7.6,20 4,16.4 4,12C4,7.6 7.6,4 12,4C16.4,4 20,7.6 20,12C20,16.4 16.4,20 12,20M11,15H13V17H11V15M11,7H13V13H11V7Z" />
+                        </svg>
+                        <h3>No Active Conversation</h3>
+                        <p>Click the call dialer icon on any patient appointment to initiate a voice call.</p>
+                    </div>
+                </div>
+
+                <!-- End-of-call summary box -->
+                <div class="summary-card" id="call-summary-card">
+                    <div class="summary-title">Call Outcome Summary</div>
+                    <div class="summary-text" id="call-summary-text">Summary text will be rendered here.</div>
+                    
+                    <div class="mock-audio-player">
+                        <button class="play-btn">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M8,5.14V19.14L19,12.14L8,5.14Z" />
+                            </svg>
+                        </button>
+                        <span>Call Recording (Mock Playback)</span>
+                        <div class="audio-waveform">
+                            <div class="audio-progress"></div>
+                        </div>
+                        <span>0:42</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Appointment Dialog Modal -->
+    <div class="modal" id="appointment-modal">
+        <div class="modal-content">
+            <h3>Schedule Patient Appointment</h3>
+            
+            <form id="appointment-form" onsubmit="saveAppointment(event)">
+                <div class="form-group" style="margin-bottom: 1.25rem;">
+                    <label for="patient-name">Patient Name</label>
+                    <input type="text" id="patient-name" required placeholder="e.g. John Doe">
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 1.25rem;">
+                    <label for="phone-number">Phone Number (Include Country Code)</label>
+                    <input type="text" id="phone-number" required placeholder="e.g. +14155552671">
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 1.25rem;">
+                    <label for="appointment-slot">Available Schedule Slots</label>
+                    <select id="appointment-slot" required>
+                        <option value="">Select a slot...</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label for="notes">Notes / Practitioner Details</label>
+                    <textarea id="notes" rows="3" placeholder="e.g. Cleaning with Dr. Sarah Smith"></textarea>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn">Create Slot</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript logic -->
+    <script>
+        let appointments = [];
+        let activeCallSid = null;
+        let eventSource = null;
+
+        // Fetch appointments on load
+        document.addEventListener("DOMContentLoaded", () => {
+            loadAppointments();
+            loadSlots();
+            setupSSE();
+        });
+
+        // Load appointments from API
+        async function loadAppointments() {
+            try {
+                const res = await fetch("/api/appointments/");
+                appointments = await res.json();
+                renderAppointments();
+            } catch (err) {
+                console.error("Failed to load appointments:", err);
+            }
+        }
+
+        // Load slots for select dropdown
+        async function loadSlots() {
+            try {
+                const res = await fetch("/api/appointments/slots");
+                const slots = await res.json();
+                const select = document.getElementById("appointment-slot");
+                
+                // Clear existing
+                select.innerHTML = '<option value="">Select a slot...</option>';
+                
+                slots.forEach(slot => {
+                    const opt = document.createElement("option");
+                    opt.value = slot.iso;
+                    opt.textContent = slot.spoken;
+                    select.appendChild(opt);
+                });
+            } catch (err) {
+                console.error("Error loading slots:", err);
+            }
+        }
+
+        // Render appointments table
+        function renderAppointments() {
+            const tbody = document.getElementById("appointments-tbody");
+            if (appointments.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:2rem;">No appointments found. Create one.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = "";
+            appointments.forEach(app => {
+                const dt = new Date(app.appointment_time);
+                // Format: Day Month Date at Time
+                const formattedTime = dt.toLocaleDateString("en-US", {
+                    weekday: "short",
+                    month: "short",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit"
+                });
+
+                const tr = document.createElement("tr");
+                tr.id = `appt-row-${app.id}`;
+                tr.innerHTML = `
+                    <td style="font-weight: 500;">${app.patient_name}</td>
+                    <td style="color: var(--text-muted);">${app.phone_number}</td>
+                    <td>${formattedTime}</td>
+                    <td>
+                        <span class="badge badge-${app.status.toLowerCase()}" id="status-badge-${app.id}">
+                            ${app.status}
+                        </span>
+                    </td>
+                    <td style="text-align: center;">
+                        <button class="call-btn" onclick="dialCall(${app.id})" title="Dial Voice AI" id="dial-btn-${app.id}">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M6.62,10.79C8.06,13.62 10.38,15.94 13.21,17.38L15.41,15.18C15.69,14.9 16.08,14.82 16.43,14.93C17.55,15.3 18.75,15.5 20,15.5A1,1 0 0,1 21,16.5V20A1,1 0 0,1 20,21A17,17 0 0,1 3,4A1,1 0 0,1 4,3H7.5A1,1 0 0,1 8.5,4C8.5,5.25 8.7,6.45 9.07,7.57C9.18,7.92 9.1,8.31 8.82,8.59L6.62,10.79Z" />
+                            </svg>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Modal triggers
+        function openModal() {
+            document.getElementById("appointment-modal").classList.add("active");
+        }
+
+        function closeModal() {
+            document.getElementById("appointment-modal").classList.remove("active");
+            document.getElementById("appointment-form").reset();
+        }
+
+        // Save new appointment
+        async function saveAppointment(e) {
+            e.preventDefault();
+            const name = document.getElementById("patient-name").value;
+            const phone = document.getElementById("phone-number").value;
+            const slot = document.getElementById("appointment-slot").value;
+            const notes = document.getElementById("notes").value;
+
+            try {
+                const res = await fetch("/api/appointments/", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        patient_name: name,
+                        phone_number: phone,
+                        appointment_time: slot,
+                        notes: notes
+                    })
+                });
+
+                if (res.ok) {
+                    closeModal();
+                    loadAppointments();
+                } else {
+                    const err = await res.json();
+                    alert(`Error creating appointment: ${err.detail || "Unknown error"}`);
+                }
+            } catch (err) {
+                console.error("Error saving appointment:", err);
+            }
+        }
+
+        // Trigger Outbound voice call
+        async function dialCall(id) {
+            // Update UI status
+            const dialBtn = document.getElementById(`dial-btn-${id}`);
+            
+            // Clear prior conversation display
+            document.getElementById("transcript-empty-state").style.display = "none";
+            
+            const transcriptBox = document.getElementById("transcript-box");
+            // Remove prior bubbles except empty state
+            const bubbles = transcriptBox.querySelectorAll(".bubble");
+            bubbles.forEach(b => b.remove());
+            
+            // Hide summary
+            document.getElementById("call-summary-card").style.display = "none";
+
+            updateConsoleStatus("active", "Dialing call...");
+
+            try {
+                const res = await fetch("/api/calls/trigger", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ appointment_id: id })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    activeCallSid = data.call_sid;
+                    updateConsoleStatus("active", `Ringing patient number...`);
+                } else {
+                    alert(`Failed to trigger call: ${data.detail || "Server error"}`);
+                    updateConsoleStatus("", "Idle - Call failed to initiate");
+                }
+            } catch (err) {
+                console.error("Dial API error:", err);
+                updateConsoleStatus("", "Idle - Connection failed");
+            }
+        }
+
+        // Setup SSE Listener for Real-time push updates
+        function setupSSE() {
+            eventSource = new EventSource("/api/calls/events");
+
+            eventSource.onmessage = (event) => {
+                const payload = JSON.parse(event.data);
+                const type = payload.event;
+                const data = payload.data;
+
+                if (type === "status") {
+                    handleStatusEvent(data);
+                } else if (type === "transcript") {
+                    handleTranscriptEvent(data);
+                } else if (type === "call_state") {
+                    handleCallStateEvent(data);
+                } else if (type === "db_update") {
+                    handleDbUpdateEvent(data);
+                } else if (type === "call_ended") {
+                    handleCallEndedEvent(data);
+                }
+            };
+
+            eventSource.onerror = (err) => {
+                console.error("SSE stream error. Attempting reconnect...", err);
+                // The browser will automatically handle reconnecting EventSource
+            };
+        }
+
+        // Handle SSE Status Events (Clara is speaking / thinking etc)
+        function handleStatusEvent(data) {
+            const text = data.text;
+            let statusClass = "active";
+            
+            if (text.includes("speaking")) {
+                statusClass = "listening"; // green pulsing
+            } else if (text.includes("thinking") || text.includes("updating")) {
+                statusClass = "thinking"; // orange pulsing
+            } else if (text.includes("listening")) {
+                statusClass = "listening";
+            } else if (text.includes("Completed") || text.includes("ended")) {
+                statusClass = "";
+            }
+            
+            updateConsoleStatus(statusClass, text);
+        }
+
+        // Handle SSE Transcript Events (Bubbles)
+        function handleTranscriptEvent(data) {
+            const transcriptBox = document.getElementById("transcript-box");
+            
+            // Hide empty state
+            document.getElementById("transcript-empty-state").style.display = "none";
+            
+            // Clear prior transcript bubbles on very first incoming phrase to avoid overlap
+            // (The dial clears it, but double check)
+            
+            // Check if we already have this text in the bubbles to avoid double-printing
+            const role = data.role; // user or assistant
+            const text = data.text;
+
+            // Create a bubble
+            const bubble = document.createElement("div");
+            bubble.classList.add("bubble");
+            bubble.classList.add(role === "assistant" ? "bubble-ai" : "bubble-user");
+            
+            // Set content with speaker tag
+            const prefix = role === "assistant" ? "Clara: " : "Patient: ";
+            bubble.textContent = prefix + text;
+            
+            transcriptBox.appendChild(bubble);
+            transcriptBox.scrollTop = transcriptBox.scrollHeight;
+        }
+
+        // Handle Call State changes (ringing -> in-progress -> completed)
+        function handleCallStateEvent(data) {
+            const state = data.status;
+            if (state === "ringing") {
+                updateConsoleStatus("active", "Call is ringing...");
+            } else if (state === "in-progress") {
+                updateConsoleStatus("listening", "Call answered. Conversation in progress...");
+            }
+        }
+
+        // Handle DB Updates (Real-time appointment rows updates)
+        function handleDbUpdateEvent(data) {
+            const id = data.appointment_id;
+            const newStatus = data.status;
+            
+            // Update status badge
+            const badge = document.getElementById(`status-badge-${id}`);
+            if (badge) {
+                badge.className = `badge badge-${newStatus.toLowerCase()}`;
+                badge.textContent = newStatus;
+            }
+            
+            // Update time in table if rescheduled
+            if (newStatus === "RESCHEDULED" && data.appointment_time) {
+                // Find row and reload appointments list to refresh dates
+                loadAppointments();
+            }
+        }
+
+        // Handle Call Ended Event
+        function handleCallEndedEvent(data) {
+            updateConsoleStatus("", "Call ended - Summary generated");
+            activeCallSid = null;
+
+            // Show summary card
+            const summaryCard = document.getElementById("call-summary-card");
+            const summaryText = document.getElementById("call-summary-text");
+            summaryText.textContent = data.summary;
+            summaryCard.style.display = "flex";
+            
+            // Refresh table states
+            loadAppointments();
+        }
+
+        // Helper to adjust the status bar
+        function updateConsoleStatus(className, text) {
+            const indicator = document.getElementById("console-indicator");
+            const statusText = document.getElementById("console-status-text");
+            
+            indicator.className = "pulsing-indicator";
+            if (className) {
+                indicator.classList.add(className);
+            }
+            
+            statusText.textContent = text;
+        }
+    </script>
+</body>
+</html>
