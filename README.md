@@ -1,3 +1,13 @@
+---
+title: AppointmentSceduler
+emoji: 📞
+colorFrom: indigo
+colorTo: purple
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # Apex Dental - Outbound Voice AI Receptionist
 
 This repository contains a production-minded Outbound Voice AI Agent built using **FastAPI**, **SQLite**, **Twilio Media Streams**, **Groq (LLM)**, and **Deepgram (STT/TTS)**. 
