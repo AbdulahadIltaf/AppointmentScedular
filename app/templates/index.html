@@ -981,12 +981,17 @@
             // Hide empty state
             document.getElementById("transcript-empty-state").style.display = "none";
             
-            // Clear prior transcript bubbles on very first incoming phrase to avoid overlap
-            // (The dial clears it, but double check)
-            
-            // Check if we already have this text in the bubbles to avoid double-printing
             const role = data.role; // user or assistant
             const text = data.text;
+
+            // Create a wrapper to hold bubble and its timestamp
+            const wrapper = document.createElement("div");
+            wrapper.style.display = "flex";
+            wrapper.style.flexDirection = "column";
+            wrapper.style.width = "100%";
+            wrapper.style.alignItems = role === "assistant" ? "flex-start" : "flex-end";
+            wrapper.style.gap = "4px";
+            wrapper.style.margin = "4px 0";
 
             // Create a bubble
             const bubble = document.createElement("div");
@@ -997,7 +1002,17 @@
             const prefix = role === "assistant" ? "Clara: " : "Patient: ";
             bubble.textContent = prefix + text;
             
-            transcriptBox.appendChild(bubble);
+            // Create timestamp
+            const timeSpan = document.createElement("span");
+            timeSpan.style.fontSize = "0.7rem";
+            timeSpan.style.color = "var(--text-muted)";
+            timeSpan.style.padding = "0 8px";
+            timeSpan.textContent = data.timestamp || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+            wrapper.appendChild(bubble);
+            wrapper.appendChild(timeSpan);
+            
+            transcriptBox.appendChild(wrapper);
             transcriptBox.scrollTop = transcriptBox.scrollHeight;
         }
 

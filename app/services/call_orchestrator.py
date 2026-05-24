@@ -51,7 +51,7 @@ class CallOrchestrator:
         
         # Initialize Groq client
         self.groq_client = Groq(api_key=settings.GROQ_API_KEY)
-        self.model = "llama-3.3-70b-versatile"
+        self.model = "llama3-8b-8192"
         
         # Audio playback control
         self.play_task = None
@@ -98,9 +98,11 @@ Conversation Flow Guidelines:
    - If they ask to reschedule, call the `get_available_slots` tool to retrieve available appointments, present the slots clearly (limit to 3 slots spoken at a time so they are easy to remember), and ask which one they prefer.
    - Once they pick a slot, call the `reschedule_appointment` tool and confirm the new time with them.
 5. **Tone & Constraints**:
-   - Keep your responses concise (1-2 sentences maximum). People on the phone don't like listening to long monologues.
-   - Do NOT say "Sure!" or "Awesome!" repeatedly. Be professional, empathetic, and polite.
-   - Make sure to call the correct tools whenever the patient makes a decision.
+   - CRITICAL: Keep your responses extremely short. You must answer in a single short sentence (maximum 5 to 12 words per turn).
+   - Never output multiple sentences.
+   - Do not say "Sure!", "Awesome!", or "Great!" repeatedly. Be direct, polite, and professional.
+   - If offering rescheduling slots, present only ONE slot at a time. Ask: "Would Monday at 9 AM work?" instead of reading a list.
+   - Make sure to call the correct tools immediately.
 """
 
     def get_tools_schema(self) -> list:
@@ -234,6 +236,7 @@ Conversation Flow Guidelines:
         await broadcaster.broadcast("transcript", {
             "role": "assistant",
             "text": text,
+            "timestamp": datetime.now().strftime("%I:%M:%S %p"),
             "full": "\n".join(self.transcript_history)
         })
 
@@ -321,6 +324,7 @@ Conversation Flow Guidelines:
             await broadcaster.broadcast("transcript", {
                 "role": "user",
                 "text": user_text,
+                "timestamp": datetime.now().strftime("%I:%M:%S %p"),
                 "full": "\n".join(self.transcript_history)
             })
 
@@ -384,7 +388,7 @@ Conversation Flow Guidelines:
             "Authorization": f"Token {settings.DEEPGRAM_API_KEY}"
         }
         # Nov-2 model for telephony 8kHz mulaw
-        dg_url = "wss://api.deepgram.com/v1/listen?encoding=mulaw&sample_rate=8000&channels=1&model=nova-2-phonecall&smart_format=true&endpointing=500"
+        dg_url = "wss://api.deepgram.com/v1/listen?encoding=mulaw&sample_rate=8000&channels=1&model=nova-2-phonecall&smart_format=true&endpointing=300"
         
         try:
             import websockets
@@ -467,6 +471,7 @@ Conversation Flow Guidelines:
 
         async def receive_from_deepgram():
             """Task to listen for transcripts from Deepgram and trigger LLM generation."""
+            speech_buffer = []
             try:
                 async for message in dg_ws:
                     data = json.loads(message)
@@ -489,14 +494,18 @@ Conversation Flow Guidelines:
                     speech_final = data.get("speech_final", False)
                     
                     if is_final:
-                        logger.info(f"User speaking (final): {transcript}")
-                        await broadcaster.broadcast("status", {"text": f"Patient: '{transcript}'"})
+                        speech_buffer.append(transcript)
+                        logger.info(f"User speaking (segment): {transcript}")
+                        current_phrase = " ".join(speech_buffer)
+                        await broadcaster.broadcast("status", {"text": f"Patient: '{current_phrase}'"})
                         
-                        # If Deepgram determines speech has concluded
-                        if speech_final or len(transcript.split()) >= 2:
+                    if speech_final:
+                        full_phrase = " ".join(speech_buffer).strip()
+                        if full_phrase:
+                            logger.info(f"User speaking turn complete: {full_phrase}")
+                            speech_buffer.clear()
                             # Run LLM response generation in background
-                            # We check if there's no active speech response already being processed
-                            asyncio.create_task(self.generate_response(transcript))
+                            asyncio.create_task(self.generate_response(full_phrase))
             except Exception as e:
                 logger.error(f"Error in receive_from_deepgram: {e}")
 
