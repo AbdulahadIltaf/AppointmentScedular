@@ -1023,6 +1023,16 @@
                 updateConsoleStatus("active", "Call is ringing...");
             } else if (state === "in-progress") {
                 updateConsoleStatus("listening", "Call answered. Conversation in progress...");
+            } else if (state === "busy") {
+                if (data.retry_delay_seconds) {
+                    updateConsoleStatus("active", `Line busy. Retrying in ${data.retry_delay_seconds}s...`);
+                } else {
+                    updateConsoleStatus("", "Line busy.");
+                }
+            } else if (state === "retrying") {
+                updateConsoleStatus("active", `Retrying call in ${data.retry_delay_seconds}s...`);
+            } else if (state === "completed") {
+                updateConsoleStatus("", "Call completed.");
             }
         }
 

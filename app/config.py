@@ -19,6 +19,11 @@ class Settings(BaseSettings):
     BASE_URL: str = Field(default="http://localhost:8000")
     PORT: int = Field(default=8000)
     HOST: str = Field(default="0.0.0.0")
+    OUTBOUND_RETRY_DELAYS_SECONDS: str = Field(default="8,20")
+    OUTBOUND_RETRY_ON_STATUSES: str = Field(default="busy")
+    DEEPGRAM_STT_ENDPOINTING_MS: int = Field(default=180)
+    DEEPGRAM_STT_INTERIM_RESULTS: bool = Field(default=True)
+    USER_TURN_TIMEOUT_MS: int = Field(default=1200)
 
     # Allow loading from .env file
     model_config = SettingsConfigDict(
