@@ -90,17 +90,20 @@ async def get_twiml(request: Request, appointment_id: int):
     return Response(content=twiml_content, media_type="application/xml")
 
 @router.websocket("/stream")
-async def handle_call_stream(websocket: WebSocket, appointment_id: int, db: Session = Depends(get_db)):
+async def handle_call_stream(websocket: WebSocket, appointment_id: int):
     """Handles the WebSocket media stream connection from Twilio."""
-    await websocket.accept()
-    logger.info(f"Twilio Media Stream WebSocket accepted for appointment {appointment_id}.")
-    
-    orchestrator = CallOrchestrator(websocket, appointment_id, db)
+    from app.database import SessionLocal
+    db = SessionLocal()
     try:
+        await websocket.accept()
+        logger.info(f"Twilio Media Stream WebSocket accepted for appointment {appointment_id}.")
+        
+        orchestrator = CallOrchestrator(websocket, appointment_id, db)
         await orchestrator.run()
     except Exception as e:
         logger.error(f"Error in Twilio Media Stream: {e}")
     finally:
+        db.close()
         logger.info(f"Twilio Media Stream WebSocket closed for appointment {appointment_id}.")
 
 @router.get("/events")
